@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { Database, FileText, Bell, ShieldCheck, ArrowRight, Clock, Lock, AlertTriangle, Plus, ChevronRight, GitFork } from 'lucide-react';
+import { Database, FileText, Bell, ShieldCheck, ArrowRight, Clock, Lock, AlertTriangle, Plus, ChevronRight, GitFork, MapPin } from 'lucide-react';
 import ZeroTrustSecurityPanel from '../components/ZeroTrustSecurityPanel';
 
 export default function DashboardPage({ navigateTo: propNavigateTo }) {
@@ -38,8 +38,9 @@ export default function DashboardPage({ navigateTo: propNavigateTo }) {
 
   return (
     <div className="space-y-6">
+      <section className="dashboard-overview white-card" aria-label="Dashboard overview">
       {/* Welcome Banner */}
-      <div className="white-card p-6 border border-slate-200 bg-gradient-to-r from-blue-50/40 via-white to-white flex flex-wrap items-center justify-between gap-4">
+      <div className="dashboard-welcome p-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-bold text-slate-900 font-mono">Welcome back, {user ? user.name : 'Officer'}</h2>
@@ -73,11 +74,13 @@ export default function DashboardPage({ navigateTo: propNavigateTo }) {
         </div>
       </div>
 
-      <section className="white-card grid gap-3 border border-slate-200 p-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Staff assignment details">
-        <div><div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Employee ID</div><div className="mt-1 font-mono text-sm font-semibold text-slate-800">{user?.employeeId || user?.id || '—'}</div></div>
-        <div><div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Designation</div><div className="mt-1 text-sm font-semibold text-slate-800">{user?.roleTitle || user?.role || '—'}</div></div>
-        <div><div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Police Station</div><div className="mt-1 text-sm font-semibold text-slate-800">{user?.policeStation || 'Not applicable'}</div></div>
-        <div><div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Work Location</div><div className="mt-1 text-sm font-semibold text-slate-800">{user?.workLocation || user?.departmentName || '—'}</div></div>
+      <div className="dashboard-location flex items-center gap-3 p-3" aria-label="Current location">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700"><MapPin className="h-5 w-5" /></div>
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Current Location</div>
+          <div className="mt-1 text-sm font-semibold text-slate-800">{user?.currentLocation || user?.policeStation || user?.workLocation || 'Location not assigned'}</div>
+        </div>
+      </div>
       </section>
 
       {/* Continuous Zero-Trust Security Posture & RBAC/ABAC Evaluation Section */}

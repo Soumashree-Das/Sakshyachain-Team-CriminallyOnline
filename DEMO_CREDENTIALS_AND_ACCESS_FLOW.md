@@ -11,6 +11,7 @@ Employees enter the Employee ID in the username field, followed by the password.
 | Inspector Vikram Sharma | `POL-101` | `Vikram@2026` | `10.20.20.101` | Chief Investigating Officer | State vs. Cyber Syndicate (`CASE-2026-8891`) |
 | Inspector Bhir Rao | `POL-102` | `Bhir@2026` | `10.20.20.106` | Investigation Officer | State Narcotics Operation (`CASE-2026-4412`) |
 | Sub-Inspector Asha Nair | `POL-103` | `Asha@2026` | `10.20.20.107` | Sub-Inspector | Commercial Complex Armed Robbery (`CASE-2026-1102`) |
+| Inspector Arjun Sen | `SUP-606` | `Supervisor@2026` | `10.20.20.108` | Investigations Supervisor | Break-glass approvals for assigned staff |
 | Dr. Sunita Rao | `FOR-202` | `Sunita@2026` | `10.20.20.102` | Senior Forensic Analyst | `CASE-2026-8891`, `CASE-2026-4412` |
 | Advocate Rajesh Verma | `PROS-303` | `Rajesh@2026` | `10.20.20.103` | Senior Public Prosecutor | `CASE-2026-8891`, `CASE-2026-1102` |
 | Justice P. K. Mukherjee | `JUD-404` | `Justice@2026` | `10.20.20.104` | Special Sessions Court Magistrate | All three demonstration cases |
@@ -33,9 +34,9 @@ IT Admin can view system information and grant or revoke employee document permi
 
 ## OTP in the prototype
 
-After credentials are accepted, the sign-in page displays a generated six-digit code in a **Prototype desktop message** panel. Enter that code in the OTP field to finish sign-in. Codes expire after 120 seconds and are single-use. This simulates message delivery for the prototype; it does not send an SMS or email.
+After credentials are accepted, enter the fixed prototype OTP `246810` on the same sign-in page to finish signing in. The OTP field masks the digits by default; use its eye button to reveal them. The code expires after 120 seconds, is single-use per challenge, and has a three-attempt lockout. This prototype does not send an SMS or email.
 
-Newly registered employees use the employee ID entered during registration. The page displays a generated temporary password once; save it and share it with that employee for the demonstration. Their OTP is generated at each sign-in in the same desktop message panel.
+Newly registered employees use the employee ID entered during registration. The page displays a generated temporary password once; save it and share it with that employee for the demonstration. They use the same fixed prototype OTP, `246810`, at sign-in.
 
 ## Access request flow
 

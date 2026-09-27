@@ -6,7 +6,7 @@ export default function TermsConditionsPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 font-sans py-12 px-4 sm:px-6 lg:px-8">
+    <div className="page-with-watermark min-h-screen text-slate-800 font-sans py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto space-y-8">
         
         {/* Navigation & Header */}

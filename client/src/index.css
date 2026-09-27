@@ -13,12 +13,12 @@
   --text-body: #334155;
   --text-muted: #64748b;
 
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
+  --color-primary: #287344;
+  --color-primary-hover: #205c39;
   --color-emerald: #059669;
   --color-crimson: #dc2626;
   --color-amber: #d97706;
-  --color-indigo: #4f46e5;
+  --color-indigo: #dd6b1d;
 }
 
 * {
@@ -30,9 +30,153 @@
 
 body {
   background-color: var(--bg-main);
+  background-image: linear-gradient(rgba(248, 250, 252, .78), rgba(248, 250, 252, .78)), url('/justice-system-tricolor.webp');
+  background-position: center, center;
+  background-size: cover, cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   color: var(--text-body);
   min-height: 100vh;
   overflow-x: hidden;
+}
+
+#root { min-height: 100vh; }
+.portal-shell, .page-with-watermark { background-color: transparent !important; }
+.login-page { min-height: 100vh; background: linear-gradient(90deg, #082c21 0 50%, #f8faf7 50% 100%); }
+.login-visual { position: relative; min-height: 570px; padding: 34px 28px; overflow: hidden; color: #fff; }
+.login-visual img { display: block; width: auto; height: min(500px, 62vh); max-width: 100%; position: relative; z-index: 1; border: 5px solid #fff; border-radius: 3px; object-fit: cover; filter: drop-shadow(0 14px 28px rgba(0,0,0,.25)); }
+.login-visual::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: linear-gradient(90deg, #ff9933 0 33.33%, #fff 33.33% 66.66%, #138808 66.66%); }
+.login-visual p { color: #f8f5e9; }
+.login-content { padding: 32px 20px; }
+.login-content > div:first-child > div:first-child { background-color: #287344; }
+.login-main { width: 100%; }
+.login-layout { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 0; }
+.login-visual { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.login-visual img { display: block; width: min(100%, 350px); max-height: 500px; object-fit: contain; filter: drop-shadow(0 14px 24px rgba(27, 57, 43, .10)); }
+.login-visual p { margin-top: 14px; color: #41644f; font-size: 11px; font-weight: 700; letter-spacing: .18em; }
+.login-visual p span { padding: 0 5px; color: #bd8b35; }
+.login-content { width: 100%; max-width: 500px; justify-self: center; }
+.dashboard-overview { overflow: hidden; background: linear-gradient(120deg, #fff 0%, #f5faf6 100%); }
+.dashboard-welcome { min-height: 0; }
+.dashboard-location { border-top: 1px solid #e2ebe4; background: rgba(231, 243, 234, .46); }
+
+/* Public-sector portal shell: utility ribbon, formal masthead and horizontal menus. */
+.portal-utility { background: #173b32; color: #f8fafc; font-size: 11px; }
+.portal-utility-inner { max-width: 1280px; min-height: 28px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.portal-accessibility { color: #f5c36a; }
+.portal-emblem { width: 44px; height: 44px; border-radius: 50%; background: #f4f0e6; color: #174638; border: 2px solid #bd8b35; display: flex; align-items: center; justify-content: center; }
+.portal-role-tag { font-size: 9px; padding: 3px 7px; border: 1px solid #d9c49a; background: #fbf6e9; color: #675126; font-weight: 700; border-radius: 2px; }
+.portal-nav { background: #174638; border-top: 4px solid #c48727; border-bottom: 1px solid #12392e; color: white; position: relative; z-index: 35; }
+.portal-nav-inner { max-width: 1280px; min-height: 46px; margin: 0 auto; padding: 0 24px; display: flex; align-items: stretch; }
+.portal-nav-inner > a, .portal-menu > summary { display: flex; align-items: center; gap: 8px; padding: 0 16px; color: #fff; font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; list-style: none; white-space: nowrap; border-right: 1px solid rgba(255,255,255,.12); }
+.portal-menu > summary::-webkit-details-marker { display: none; }
+.portal-menu > summary svg { width: 13px; height: 13px; transform: rotate(90deg); }
+.portal-nav-inner > a:hover, .portal-menu > summary:hover, .portal-menu[open] > summary { background: #245b49; color: #ffe2a7; }
+.portal-nav-actions { display: flex; align-items: stretch; gap: 4px; margin-left: auto; padding-left: 12px; }
+.portal-nav-action { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 12px; border: 0; border-left: 1px solid rgba(255,255,255,.12); background: transparent; color: #fff; font: inherit; font-size: 12px; font-weight: 600; text-decoration: none; white-space: nowrap; cursor: pointer; }
+.portal-nav-action:hover { background: #245b49; color: #ffe2a7; }
+.portal-nav-badge { position: absolute; top: 5px; right: 4px; min-width: 15px; height: 15px; padding: 0 4px; display: flex; align-items: center; justify-content: center; border-radius: 999px; background: #d97706; color: white; font-size: 9px; line-height: 1; }
+.portal-home { border-left: 1px solid rgba(255,255,255,.12); }
+.portal-menu { position: relative; display: flex; }
+.portal-dropdown { position: absolute; top: 100%; left: 0; min-width: 250px; max-height: 70vh; overflow: auto; padding: 7px 0; background: #fff; border: 1px solid #d8d4c8; box-shadow: 0 8px 18px rgba(20,40,32,.2); }
+.portal-dropdown a { display: flex; align-items: center; gap: 10px; padding: 9px 14px; color: #293b34; text-decoration: none; font-size: 13px; }
+.portal-dropdown a svg { flex: none; width: 15px; height: 15px; color: #537866; }
+.portal-dropdown a:hover, .portal-dropdown a.portal-link-active { background: #f1f5ef; color: #174638; }
+.portal-content { width: 100%; max-width: 1280px; margin: 0 auto; }
+/* Give application pages the same calm, open rhythm: one clear surface per section. */
+.portal-content { color: #34433b; }
+.portal-content-wide { max-width: none; padding-left: clamp(16px, 2vw, 36px); padding-right: clamp(16px, 2vw, 36px); }
+.portal-content .white-card {
+  border-radius: 8px;
+  border-color: #d9dfda;
+  box-shadow: none;
+}
+.portal-content .white-card-hover:hover {
+  border-color: #9aaa9e;
+  box-shadow: 0 3px 10px rgba(25, 55, 42, .07);
+  transform: translateY(-1px);
+}
+/* Nested reusable cards read as content groups instead of another framed panel. */
+.portal-content .white-card .white-card {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.portal-content .white-card .white-card-hover:hover {
+  background: #f7f8f5;
+  border-color: #d9dfda;
+}
+.portal-content h1, .portal-content h2, .portal-content h3 { letter-spacing: -.015em; }
+.portal-content .input-field { border-radius: 6px; border-color: #cbd4ce; }
+.portal-content .btn { border-radius: 6px; }
+.portal-content .portal-panel { background: transparent; border: 1px solid #d9dfda; border-radius: 8px; box-shadow: none; padding: 16px; }
+.portal-content .portal-panel > * + * { margin-top: 14px; }
+.portal-panel > .grid > div { background: transparent !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; padding: 8px 10px; }
+.portal-panel > .grid > div + div { border-left: 1px solid #dfe4df !important; }
+.portal-content .portal-panel > .flex:first-child { padding-bottom: 12px; border-color: #d9dfda; }
+.portal-content .portal-panel .bg-slate-50 { background: #f7f8f5; }
+.case-list-page .case-filter-select { width: 190px; flex: 0 0 190px; }
+.case-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; gap: 16px; }
+.case-card-grid > .case-card { min-width: 0; height: 100%; display: flex; flex-direction: column; }
+.case-card-grid > .white-card:not(.case-card) { grid-column: 1 / -1; }
+.case-file-list { max-height: 176px; overflow-y: auto; align-content: flex-start; }
+.case-file-chip { max-width: 100%; min-width: 0; }
+.case-file-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.case-card-footer { margin-top: auto; }
+.access-request-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 14px; }
+.access-request-grid > article { min-width: 0; border-color: #e0e5e0; border-radius: 8px; display: flex; flex-direction: column; }
+.access-request-grid > article > .grid { flex: 1; }
+.access-requests-page .white-card { max-width: none; }
+.access-flow-diagram { padding: 18px 22px; border-color: #bdd7c6; background: linear-gradient(135deg, #fff 0%, #f3f8f4 52%, #edf5ef 100%); }
+.access-flow-main { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.2fr) auto minmax(0, 1fr); align-items: center; gap: 14px; text-align: center; }
+.access-flow-step { min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #52675a; font-size: 12px; }
+.access-flow-step b, .access-flow-supervisor b { color: #1c573a; font-size: 12px; letter-spacing: .035em; }
+.access-flow-step strong { color: #287344; font-weight: 600; }
+.access-flow-request { padding: 12px 16px; border-radius: 10px; background: rgba(40, 115, 68, .08); }
+.access-flow-arrow { color: #398b55; font-size: 24px; font-weight: 600; }
+.access-flow-supervisor { position: relative; width: fit-content; max-width: 100%; margin: 22px auto 0; padding: 16px 24px 2px; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #52675a; text-align: center; font-size: 12px; }
+.access-flow-supervisor::before { content: ''; position: absolute; width: 2px; height: 20px; left: 50%; top: -2px; transform: translateX(-50%); background: #60a873; }
+.access-flow-supervisor::after { content: ''; position: absolute; width: min(440px, 78vw); height: 2px; left: 50%; top: -2px; transform: translateX(-50%); background: linear-gradient(90deg, transparent, #60a873 12%, #60a873 88%, transparent); z-index: 0; }
+.access-flow-supervisor > * { position: relative; z-index: 1; }
+.case-document-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.case-document-card { min-height: 116px; min-width: 0; }
+.case-document-info { min-width: 0; }
+.case-document-info > div:first-child { min-width: 0; flex-wrap: wrap; align-items: flex-start; }
+.case-document-title { min-width: 0; flex: 1 1 100%; white-space: normal; overflow-wrap: anywhere; }
+.case-document-meta { overflow-wrap: anywhere; }
+.case-document-actions { max-width: 52%; flex-wrap: wrap; justify-content: flex-end; align-content: center; gap: 6px; }
+.case-document-actions > div { flex-wrap: wrap; justify-content: flex-end; }
+@media (max-width: 767px) {
+  .portal-panel > .grid > div + div { border-left: 0 !important; border-top: 1px solid #dfe4df !important; }
+  .portal-utility-inner { padding: 0 14px; }
+  .case-list-page .case-filter-select { width: 100%; flex: 1 0 100%; }
+  .case-card-grid { grid-template-columns: 1fr; }
+  .case-document-grid { grid-template-columns: 1fr; }
+  .access-request-grid { grid-template-columns: 1fr; }
+  .access-flow-main { grid-template-columns: 1fr; gap: 8px; }
+  .access-flow-arrow { transform: rotate(90deg); font-size: 20px; line-height: 1; }
+  .access-flow-supervisor { margin-top: 14px; }
+  .access-flow-supervisor::after { width: 70vw; }
+  .case-document-actions { max-width: 55%; }
+  .portal-nav-inner { display: none; padding: 6px 14px 12px; flex-direction: column; align-items: stretch; }
+  .portal-nav.portal-nav-open .portal-nav-inner { display: flex; }
+  .portal-nav-inner > a, .portal-menu > summary { min-height: 42px; padding: 0 12px; border: 0; border-bottom: 1px solid rgba(255,255,255,.12); }
+  .portal-nav-actions { margin-left: 0; padding: 8px 0 0; flex-wrap: wrap; }
+  .portal-nav-action { min-height: 40px; border: 1px solid rgba(255,255,255,.18); padding: 0 12px; }
+  .portal-menu { display: block; }
+  .portal-dropdown { position: static; max-height: 42vh; box-shadow: none; border: 0; }
+  .portal-content { padding-left: 14px; padding-right: 14px; }
+}
+@media (max-width: 900px) {
+  .login-page { background: linear-gradient(180deg, #082c21 0 350px, #f8faf7 350px 100%); }
+  .login-layout { max-width: 560px; grid-template-columns: 1fr; gap: 12px; }
+  .login-visual { min-height: 0; padding: 26px 18px 8px; }
+  .login-visual img { width: auto; height: 205px; max-height: none; }
+  .login-visual p { margin-top: 8px; font-size: 9px; }
+  .login-content { padding: 12px 0 24px; }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .case-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* Custom Scrollbar */

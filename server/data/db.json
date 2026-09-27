@@ -14,7 +14,7 @@
       "assignedCases": [
         "CASE-2026-8891"
       ],
-      "supervisorId": "USR-JUD-404",
+      "supervisorId": "USR-SUP-606",
       "employeeId": "POL-101",
       "policeStation": "Central Police Station",
       "workLocation": "Central District Headquarters",
@@ -36,7 +36,7 @@
         "CASE-2026-8891",
         "CASE-2026-4412"
       ],
-      "supervisorId": "USR-JUD-404",
+      "supervisorId": "USR-SUP-606",
       "employeeId": "FOR-202",
       "policeStation": "",
       "workLocation": "State Central Forensic Science Laboratory, Kolkata",
@@ -58,7 +58,7 @@
         "CASE-2026-8891",
         "CASE-2026-1102"
       ],
-      "supervisorId": "USR-JUD-404",
+      "supervisorId": "USR-SUP-606",
       "employeeId": "PROS-303",
       "policeStation": "",
       "workLocation": "High Court Division, Kolkata",
@@ -138,7 +138,7 @@
       "name": "Inspector Bhir Rao",
       "username": "POL-102",
       "role": "POLICE_INVESTIGATOR",
-      "supervisorId": "USR-JUD-404",
+      "supervisorId": "USR-SUP-606",
       "roleTitle": "Investigation Officer",
       "department": "LEO",
       "departmentName": "Special Crime Branch - Central Police",
@@ -149,8 +149,8 @@
         "CASE-2026-4412"
       ],
       "accountFrozen": true,
-      "frozenAt": "2026-09-24T20:17:52.454Z",
-      "frozenUntil": "2026-09-24T20:32:52.454Z",
+      "frozenAt": "2026-09-25T14:22:06.928Z",
+      "frozenUntil": "2026-09-25T14:37:06.928Z",
       "freezeReason": "Tampering detected on evidence DOC-ACCESS-TEST-104",
       "employeeId": "POL-102",
       "policeStation": "North District Police Station",
@@ -164,7 +164,7 @@
       "name": "Sub-Inspector Asha Nair",
       "username": "POL-103",
       "role": "POLICE_INVESTIGATOR",
-      "supervisorId": "USR-JUD-404",
+      "supervisorId": "USR-SUP-606",
       "roleTitle": "Sub-Inspector",
       "department": "LEO",
       "departmentName": "Special Crime Branch - Central Police",
@@ -178,6 +178,48 @@
         "CASE-2026-1102"
       ],
       "assignedIp": "10.20.20.107"
+    },
+    {
+      "id": "USR-EMP-be915dd4-1645-4e8b-ae95-0e8294b4fc4f",
+      "employeeId": "POL-2026",
+      "username": "POL-2026",
+      "name": "Shree Nayak",
+      "contact": "9999999999",
+      "assignedIp": "10.20.11.67",
+      "role": "PUBLIC_PROSECUTOR",
+      "roleTitle": "lawyer",
+      "supervisorId": "USR-SUP-606",
+      "department": "PROS",
+      "departmentName": "Directorate of Prosecution",
+      "policeStation": "Gobra",
+      "workLocation": "Court",
+      "clearanceLevel": 3,
+      "systemRole": "EMPLOYEE",
+      "assignedCases": [],
+      "passwordSalt": "9e8dfbaa93ab37c50f8b59e94c21627f656eb7651bf15b31ff05d4a6be3f97b5",
+      "passwordHash": "7df3e7233411b7f6bb44660b68d431bc901173d82b2a228b6dd781f173db6bc1481c85c29f8f0d77330f604e64eefc7a98d92075fe9da8e6f4f59b1dc8c85b47"
+    },
+    {
+      "id": "USR-SUP-606",
+      "employeeId": "SUP-606",
+      "username": "SUP-606",
+      "name": "Inspector Arjun Sen",
+      "role": "SUPERVISOR",
+      "systemRole": "EMPLOYEE",
+      "roleTitle": "Investigations Supervisor",
+      "department": "LEO",
+      "departmentName": "Special Crime Branch - Central Police",
+      "policeStation": "Central Police Station",
+      "workLocation": "Central District Headquarters",
+      "contact": "arjun.sen@demo.icjs.gov.in",
+      "assignedIp": "10.20.20.108",
+      "supervisorId": "USR-JUD-404",
+      "clearanceLevel": 3,
+      "assignedCases": [
+        "CASE-2026-8891",
+        "CASE-2026-4412",
+        "CASE-2026-1102"
+      ]
     }
   ],
   "cases": [
@@ -2162,9 +2204,9 @@
         "payloadAuthTag": "a84d62f228df2c7449eaa19a1bd878e4"
       },
       "signature": null,
-      "tamperLockedUntil": "2026-09-24T20:32:52.454Z",
+      "tamperLockedUntil": "2026-09-25T14:37:06.928Z",
       "tamperLockReason": "Unauthorized change attempt blocked; temporarily locked for IT security review.",
-      "tamperDetectedAt": "2026-09-24T20:17:52.454Z",
+      "tamperDetectedAt": "2026-09-25T14:22:06.928Z",
       "tamperActorId": "USR-POL-102",
       "tamperActorName": "Inspector Bhir Rao"
     },
@@ -2355,6 +2397,81 @@
           "timestamp": "2026-09-24T20:22:00.273Z"
         }
       ]
+    },
+    {
+      "id": "DOC-2026-8891-1299",
+      "title": "Forensic fingerprint match report",
+      "caseId": "CASE-2026-8891",
+      "caseTitle": "Case CASE-2026-8891",
+      "category": "FIR",
+      "clearanceLevel": 2,
+      "accessPolicy": "CASE_POLICY",
+      "authorId": "USR-POL-101",
+      "ownerId": "USR-POL-101",
+      "authorName": "Inspector Vikram Sharma",
+      "authorRole": "POLICE_INVESTIGATOR",
+      "department": "LEO",
+      "dateCreated": "2026-09-25T14:14:21.318Z",
+      "version": "1.0",
+      "status": "VERIFIED",
+      "extractedText": "[PDF Attachment: DSA Practice Assignment.pdf]",
+      "mimeType": "application/pdf",
+      "originalFileName": "DSA Practice Assignment.pdf",
+      "payloadHash": "8d189f34cedd812cd03d41479479f9edebf62a0201d1fc492e8c0113c57597e7",
+      "fileSize": 921176,
+      "encryptionMetadata": {
+        "algorithm": "AES-256-GCM",
+        "kmsKeyId": "KMS-MASTER-KEY-PROD-2026",
+        "encryptedDEK": "a1c12e7ec19424e0aa2f851ee095488e195d218a12314a32fb061acfd7f9c9de762dabdaa8ab9e067f983ead7c81549a1ae6057131979eb466ddc3c17397e85b",
+        "dekIv": "d95a728cefbcc4c92dabe1bb",
+        "dekAuthTag": "b74d9ebf5873667477c3125e9ef31100",
+        "payloadIv": "9b6203f57b4a549a7c229c18",
+        "payloadAuthTag": "4505a742d365722893cdf6695b98b17f"
+      },
+      "signature": null,
+      "aiEntities": [
+        {
+          "type": "Accused Suspect",
+          "name": "Sameer Verma",
+          "id": "ID-SV992"
+        },
+        {
+          "type": "Victim",
+          "name": "Rajesh Kumar",
+          "status": "Deceased"
+        },
+        {
+          "type": "Recovered Weapon",
+          "weapon": "Glock-17 Pistol (9mm)",
+          "serial": "GL-88392"
+        },
+        {
+          "type": "Location",
+          "venue": "Tech Vault Facility, Cyber Park, Block B4"
+        }
+      ],
+      "versionHistory": [
+        {
+          "version": "1.0",
+          "parentVersion": "GENESIS",
+          "parentPayloadHash": "0000000000000000000000000000000000000000000000000000000000000000",
+          "payloadHash": "8d189f34cedd812cd03d41479479f9edebf62a0201d1fc492e8c0113c57597e7",
+          "fileSize": 921176,
+          "authorId": "USR-POL-101",
+          "authorName": "Inspector Vikram Sharma",
+          "department": "LEO",
+          "dateCreated": "2026-09-25T14:14:21.318Z",
+          "changeNotes": "Initial document filing (v1.0)"
+        }
+      ],
+      "chainOfCustody": [
+        {
+          "action": "UPLOADED_AND_ENCRYPTED",
+          "actorName": "Inspector Vikram Sharma",
+          "department": "LEO",
+          "timestamp": "2026-09-25T14:14:21.318Z"
+        }
+      ]
     }
   ],
   "transferRequests": [
@@ -2503,6 +2620,83 @@
     }
   ],
   "alerts": [
+    {
+      "id": "ALT-6433",
+      "timestamp": "2026-09-25T15:00:35.309Z",
+      "status": "OPEN",
+      "resolvedBy": null,
+      "resolutionNotes": null,
+      "resolutionBlockAddress": null,
+      "title": "Break-Glass Emergency Protocol Triggered",
+      "severity": "HIGH",
+      "category": "EMERGENCY_ACCESS",
+      "actor": "JUD-404 (Justice P. K. Mukherjee)",
+      "docId": "CASE-2026-8891",
+      "details": "30-minute Emergency Access requested for case CASE-2026-8891 under Justification: \"state urgent\"."
+    },
+    {
+      "id": "ALT-8737",
+      "timestamp": "2026-09-25T14:56:40.246Z",
+      "status": "OPEN",
+      "resolvedBy": null,
+      "resolutionNotes": null,
+      "resolutionBlockAddress": null,
+      "title": "Break-Glass Emergency Protocol Triggered",
+      "severity": "HIGH",
+      "category": "EMERGENCY_ACCESS",
+      "actor": "JUD-404 (Justice P. K. Mukherjee)",
+      "docId": "CASE-2026-8891",
+      "details": "30-minute Emergency Access requested for case CASE-2026-8891 under Justification: \"State urgent care\"."
+    },
+    {
+      "id": "ALT-8424",
+      "timestamp": "2026-09-25T14:56:26.354Z",
+      "status": "OPEN",
+      "resolvedBy": null,
+      "resolutionNotes": null,
+      "resolutionBlockAddress": null,
+      "title": "Break-Glass Emergency Protocol Triggered",
+      "severity": "HIGH",
+      "category": "EMERGENCY_ACCESS",
+      "actor": "JUD-404 (Justice P. K. Mukherjee)",
+      "docId": "CASE-2026-8891",
+      "details": "30-minute Emergency Access requested for case CASE-2026-8891 under Justification: \"State urgent care\"."
+    },
+    {
+      "id": "ALT-9407",
+      "timestamp": "2026-09-25T14:47:37.919Z",
+      "status": "OPEN",
+      "resolvedBy": null,
+      "resolutionNotes": null,
+      "resolutionBlockAddress": null,
+      "title": "Break-Glass Emergency Protocol Triggered",
+      "severity": "HIGH",
+      "category": "EMERGENCY_ACCESS",
+      "actor": "JUD-404 (Justice P. K. Mukherjee)",
+      "docId": "CASE-2026-8891",
+      "details": "30-minute Emergency Access requested for case CASE-2026-8891 under Justification: \"State urgent \"."
+    },
+    {
+      "id": "ALT-8435",
+      "timestamp": "2026-09-25T14:22:06.936Z",
+      "status": "RESOLVED",
+      "resolvedBy": "SākshyaChain IT Administrator (IT Admin — Access Custodian)",
+      "resolutionNotes": "Viewed and acknowledged by IT Admin SākshyaChain IT Administrator.",
+      "resolutionBlockAddress": "",
+      "title": "Evidence Tampering Detected — Account Frozen",
+      "severity": "HIGH",
+      "category": "EVIDENCE_TAMPERING",
+      "actor": "Inspector Bhir Rao (USR-POL-102)",
+      "userId": "USR-POL-102",
+      "userName": "Inspector Bhir Rao",
+      "docId": "DOC-ACCESS-TEST-104",
+      "details": "Inspector Bhir Rao attempted to tamper with “Access Test File D - Ballistics Intake Checklist”. The change was blocked before the vault file was altered. The account and evidence are locked until 25/9/2026, 8:07:06 pm.",
+      "accountFrozen": true,
+      "frozenUntil": "2026-09-25T14:37:06.928Z",
+      "evidenceLocked": true,
+      "evidenceLockedUntil": "2026-09-25T14:37:06.928Z",
+      "resolvedAt": "2026-09-25T14:22:56.120Z"
+    },
     {
       "id": "ALT-7292",
       "timestamp": "2026-09-24T20:17:52.464Z",
@@ -2734,6 +2928,28 @@
       "supervisorDecisionBy": "USR-JUD-404",
       "supervisorDecisionAt": "2026-09-24T20:13:26.454Z",
       "supervisorDecisionReason": ""
+    },
+    {
+      "id": "AR-acf32616-06f6-441e-8f00-e02524930e84",
+      "documentId": "DOC-ACCESS-TEST-103",
+      "requesterId": "USR-POL-101",
+      "ownerId": "USR-FOR-202",
+      "supervisorId": "USR-JUD-404",
+      "permission": "DOWNLOAD",
+      "reason": "I need it for investigation purposes.",
+      "status": "GRANTED",
+      "ownerDecision": "APPROVED",
+      "supervisorDecision": "APPROVED",
+      "createdAt": "2026-09-25T14:16:51.030Z",
+      "updatedAt": "2026-09-25T14:20:35.227Z",
+      "validUntil": "2026-10-02T14:16:51.030Z",
+      "expiresAt": "2026-09-26T14:16:51.030Z",
+      "ownerDecisionBy": "USR-FOR-202",
+      "ownerDecisionAt": "2026-09-25T14:18:03.715Z",
+      "ownerDecisionReason": "",
+      "supervisorDecisionBy": "USR-JUD-404",
+      "supervisorDecisionAt": "2026-09-25T14:20:35.227Z",
+      "supervisorDecisionReason": ""
     }
   ],
   "approvals": [
@@ -2800,6 +3016,22 @@
       "decision": "APPROVED",
       "reason": "",
       "timestamp": "2026-09-24T20:13:26.454Z"
+    },
+    {
+      "requestId": "AR-acf32616-06f6-441e-8f00-e02524930e84",
+      "approverId": "USR-FOR-202",
+      "approverType": "OWNER",
+      "decision": "APPROVED",
+      "reason": "",
+      "timestamp": "2026-09-25T14:18:03.715Z"
+    },
+    {
+      "requestId": "AR-acf32616-06f6-441e-8f00-e02524930e84",
+      "approverId": "USR-JUD-404",
+      "approverType": "SUPERVISOR",
+      "decision": "APPROVED",
+      "reason": "",
+      "timestamp": "2026-09-25T14:20:35.227Z"
     }
   ],
   "abnormalities": [],
@@ -2835,6 +3067,14 @@
       "grantedByRequest": "AR-d9a078d0-4156-4e4d-8b48-73278c45b6ef",
       "grantedAt": "2026-09-24T20:13:27.040Z",
       "expiresAt": "2026-09-25T20:11:07.528Z"
+    },
+    {
+      "userId": "USR-POL-101",
+      "documentId": "DOC-ACCESS-TEST-103",
+      "permission": "DOWNLOAD",
+      "grantedByRequest": "AR-acf32616-06f6-441e-8f00-e02524930e84",
+      "grantedAt": "2026-09-25T14:20:35.702Z",
+      "expiresAt": "2026-09-26T14:16:51.030Z"
     }
   ]
 }

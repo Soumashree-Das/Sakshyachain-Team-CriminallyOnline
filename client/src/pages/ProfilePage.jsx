@@ -40,6 +40,16 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      <section className="white-card p-5 space-y-4" aria-labelledby="staff-details-heading">
+        <h2 id="staff-details-heading" className="font-bold text-slate-900">Staff Details</h2>
+        <dl className="grid gap-x-8 gap-y-4 sm:grid-cols-2">
+          <div><dt className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Employee ID</dt><dd className="mt-1 text-sm font-semibold text-slate-800">{user?.employeeId || user?.id || '—'}</dd></div>
+          <div><dt className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Designation</dt><dd className="mt-1 text-sm font-semibold text-slate-800">{user?.roleTitle || user?.role || '—'}</dd></div>
+          <div><dt className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Police Station</dt><dd className="mt-1 text-sm font-semibold text-slate-800">{user?.policeStation || 'Not applicable'}</dd></div>
+          <div><dt className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Work Location</dt><dd className="mt-1 text-sm font-semibold text-slate-800">{user?.workLocation || user?.departmentName || '—'}</dd></div>
+        </dl>
+      </section>
+
       {/* Grid: RSA Keypair & MFA Setup */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         

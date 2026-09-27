@@ -28,9 +28,48 @@ api.interceptors.request.use(config => {
   return Promise.reject(error);
 });
 
-api.interceptors.response.use(response => response, error => {
+let refreshInFlight = null;
+
+api.interceptors.response.use(response => response, async error => {
+  const originalRequest = error.config;
+  const isAuthEndpoint = /\/auth\/(login|verify-login-otp|refresh)(?:\?|$)/.test(originalRequest?.url || '');
+  const isExpiredToken = error.response?.status === 403 && error.response?.data?.error === 'FORBIDDEN_INVALID_TOKEN';
+  const shouldRefresh = (error.response?.status === 401 || isExpiredToken) && originalRequest && !originalRequest._retry && !isAuthEndpoint;
+
+  if (shouldRefresh) {
+    originalRequest._retry = true;
+    const refreshToken = sessionStorage.getItem('sakshya_refresh_token');
+    if (!refreshToken) {
+      sessionStorage.removeItem('sakshya_jwt_token');
+      window.dispatchEvent(new CustomEvent('sakshya-auth-expired'));
+      return Promise.reject(error);
+    }
+
+    try {
+      if (!refreshInFlight) {
+        refreshInFlight = axios.post(`${API_BASE_URL}/auth/refresh`, { refreshToken })
+          .then(response => {
+            sessionStorage.setItem('sakshya_jwt_token', response.data.accessToken);
+            sessionStorage.setItem('sakshya_refresh_token', response.data.refreshToken);
+            return response.data.accessToken;
+          })
+          .finally(() => { refreshInFlight = null; });
+      }
+      const accessToken = await refreshInFlight;
+      originalRequest.headers = originalRequest.headers || {};
+      originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+      return api(originalRequest);
+    } catch (refreshError) {
+      sessionStorage.removeItem('sakshya_jwt_token');
+      sessionStorage.removeItem('sakshya_refresh_token');
+      window.dispatchEvent(new CustomEvent('sakshya-auth-expired'));
+      return Promise.reject(refreshError);
+    }
+  }
+
   if (error.response?.status === 423 && error.response?.data?.error === 'ACCOUNT_FROZEN') {
     sessionStorage.removeItem('sakshya_jwt_token');
+    sessionStorage.removeItem('sakshya_refresh_token');
     window.dispatchEvent(new CustomEvent('sakshya-account-frozen', { detail: error.response.data.message }));
   }
   return Promise.reject(error);

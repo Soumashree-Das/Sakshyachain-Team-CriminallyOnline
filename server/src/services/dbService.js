@@ -188,6 +188,23 @@ class DBService {
       const firstITAdmin = db.users.find(u => u.id === 'USR-IT-001');
       if (firstITAdmin && (firstITAdmin.username !== 'it_admin1' || firstITAdmin.roleTitle !== 'IT Admin — Access Custodian')) { firstITAdmin.username = 'it_admin1'; firstITAdmin.roleTitle = 'IT Admin — Access Custodian'; firstITAdmin.systemRole = 'IT_ADMIN'; migrated = true; }
       if (!db.users.some(u => u.id === 'USR-IT-002')) { db.users.push({ id: 'USR-IT-002', name: 'Meera Nair', username: 'it_admin2', role: 'IT_ADMIN', roleTitle: 'IT Admin — Access Custodian', systemRole: 'IT_ADMIN', department: 'IT', departmentName: 'Information Technology', clearanceLevel: 0, assignedCases: [] }); migrated = true; }
+      if (!db.users.some(u => u.id === 'USR-SUP-606')) {
+        db.users.push({
+          id: 'USR-SUP-606', employeeId: 'SUP-606', username: 'SUP-606', name: 'Inspector Arjun Sen',
+          role: 'SUPERVISOR', systemRole: 'EMPLOYEE', roleTitle: 'Investigations Supervisor', department: 'LEO',
+          departmentName: 'Special Crime Branch - Central Police', policeStation: 'Central Police Station',
+          workLocation: 'Central District Headquarters', contact: 'arjun.sen@demo.icjs.gov.in', assignedIp: '10.20.20.108',
+          supervisorId: 'USR-JUD-404', clearanceLevel: 3,
+          assignedCases: ['CASE-2026-8891', 'CASE-2026-4412', 'CASE-2026-1102']
+        });
+        migrated = true;
+      }
+      for (const employee of db.users) {
+        if (['POLICE_INVESTIGATOR', 'FORENSIC_SPECIALIST', 'PUBLIC_PROSECUTOR'].includes(employee.role) && employee.supervisorId !== 'USR-SUP-606') {
+          employee.supervisorId = 'USR-SUP-606';
+          migrated = true;
+        }
+      }
       if (!db.users.some(u => u.id === 'USR-POL-102')) {
         const bhirKeyPair = generateRSAKeyPair();
         db.users.push({

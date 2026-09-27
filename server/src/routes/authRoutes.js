@@ -17,6 +17,7 @@ const DEMO_EMPLOYEE_CREDENTIALS = {
   'pol-101': { userId: 'USR-POL-101', password: 'Vikram@2026' },
   'pol-102': { userId: 'USR-POL-102', password: 'Bhir@2026' },
   'pol-103': { userId: 'USR-POL-103', password: 'Asha@2026' },
+  'sup-606': { userId: 'USR-SUP-606', password: 'Supervisor@2026' },
   'for-202': { userId: 'USR-FOR-202', password: 'Sunita@2026' },
   'pros-303': { userId: 'USR-PRO-303', password: 'Rajesh@2026' },
   'jud-404': { userId: 'USR-JUD-404', password: 'Justice@2026' },
@@ -42,7 +43,7 @@ router.get('/users', (req, res) => {
   res.json({ users });
 });
 
-// OTPs are only created after valid portal credentials and are bound to a one-time login challenge.
+// Prototype MFA challenges are only created after valid portal credentials and are bound to a one-time login challenge.
 router.post('/verify-login-otp', (req, res) => {
   const { challengeId, otp } = req.body;
   const challenge = loginChallenges.get(String(challengeId || ''));
@@ -137,9 +138,8 @@ router.post('/login', async (req, res) => {
   const challengeId = crypto.randomUUID();
   loginChallenges.set(challengeId, { userId: targetUser.id, expiresAt: Date.now() + otpRes.expiresInSeconds * 1000 });
   res.json({
-    message: `Credentials accepted for ${targetUser.name}. Verify the desktop demo OTP to finish signing in.`,
+    message: `Credentials accepted for ${targetUser.name}. Enter the prototype MFA code to finish signing in.`,
     challengeId,
-    demoOtp: otpRes.rawOTP,
     expiresInSeconds: otpRes.expiresInSeconds,
     displayName: targetUser.name
   });

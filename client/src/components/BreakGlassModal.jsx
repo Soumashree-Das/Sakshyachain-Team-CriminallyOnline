@@ -4,12 +4,16 @@ import { useAuth } from '../context/AuthContext';
 import { X, AlertTriangle, ShieldAlert, Clock, CheckCircle2, Zap } from 'lucide-react';
 
 export default function BreakGlassModal({ isOpen, onClose }) {
-  const { user } = useAuth();
+  const { user, isBreakGlassSupervisor, isITAdmin } = useAuth();
   const [caseId, setCaseId] = useState('CASE-2026-8891');
   const [reason, setReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [activeGrants, setActiveGrants] = useState([]);
   const [allRequests, setAllRequests] = useState([]);
+  const canReviewRequests = isBreakGlassSupervisor || isITAdmin;
+  const pendingApprovals = canReviewRequests
+    ? allRequests.filter(request => request.status === 'PENDING_APPROVAL' && (isITAdmin || (request.supervisorId === user?.id && request.userId !== user?.id)))
+    : [];
 
   const fetchEmergencyStatus = async () => {
     try {
@@ -117,21 +121,21 @@ export default function BreakGlassModal({ isOpen, onClose }) {
             )}
 
             {/* Pending Requests Queue */}
-            {allRequests.filter(r => r.status === 'PENDING_APPROVAL').length > 0 && (
+            {pendingApprovals.length > 0 && (
               <div className="space-y-2">
                 <h4 className="font-bold text-amber-400 text-xs">Pending Supervisor Approvals:</h4>
-                {allRequests.filter(r => r.status === 'PENDING_APPROVAL').map(req => (
+                {pendingApprovals.map(req => (
                   <div key={req.id} className="bg-[#0d1424] p-3 rounded border border-[#24324d] flex items-center justify-between">
                     <div>
                       <div className="font-bold text-white">{req.userName} ({req.caseId})</div>
                       <div className="text-slate-400 italic text-[11px]">"{req.reason}"</div>
                     </div>
-                    <button
-                      onClick={() => handleApproveGrant(req.id)}
-                      className="btn btn-success py-1 px-3 text-xs flex items-center gap-1"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Approve Grant
-                    </button>
+                    {isBreakGlassSupervisor && <button
+                        onClick={() => handleApproveGrant(req.id)}
+                        className="btn btn-success py-1 px-3 text-xs flex items-center gap-1"
+                      >
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Approve Grant
+                      </button>}
                   </div>
                 ))}
               </div>
@@ -139,7 +143,7 @@ export default function BreakGlassModal({ isOpen, onClose }) {
           </div>
 
           {/* Request Form */}
-          <form onSubmit={handleRequestEmergency} className="space-y-4 bg-[#0d1424] p-4 rounded-xl border border-[#24324d]">
+          {!isITAdmin && !isBreakGlassSupervisor && <form onSubmit={handleRequestEmergency} className="space-y-4 bg-[#0d1424] p-4 rounded-xl border border-[#24324d]">
             <h3 className="font-bold text-white text-sm flex items-center gap-2">
               <Zap className="w-4 h-4 text-red-400" /> Request Elevated Access
             </h3>
@@ -169,7 +173,7 @@ export default function BreakGlassModal({ isOpen, onClose }) {
               <ShieldAlert className="w-4 h-4" />
               {submitting ? 'Submitting Request...' : 'Submit Break-Glass Request'}
             </button>
-          </form>
+          </form>}
         </div>
       </div>
     </div>

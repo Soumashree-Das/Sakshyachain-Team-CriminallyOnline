@@ -19,6 +19,7 @@ class BreakGlassService {
       userId,
       userName: user.name,
       userDepartment: user.department,
+      supervisorId: user.supervisorId,
       caseId,
       reason,
       status: 'PENDING_APPROVAL',
@@ -57,8 +58,12 @@ class BreakGlassService {
   approveEmergencyAccess({ requestId, supervisorId = 'USR-JUD-404' }) {
     const requestObj = emergencyGrants.get(requestId);
     if (!requestObj) throw new Error('Emergency request not found');
+    if (requestObj.userId === supervisorId) throw new Error('A requester cannot approve their own break-glass request');
+    if (requestObj.status !== 'PENDING_APPROVAL') throw new Error('This break-glass request is no longer pending approval');
+    if (requestObj.supervisorId !== supervisorId) throw new Error('Only the requester’s designated employee supervisor can approve this request');
 
     const supervisor = dbService.getUserById(supervisorId);
+    if (!supervisor || supervisor.role !== 'SUPERVISOR') throw new Error('Only a designated employee supervisor can approve break-glass access');
 
     const grantDurationMs = CONFIG.BREAK_GLASS_GRANT_MINUTES * 60 * 1000;
     const expiresAtMs = Date.now() + grantDurationMs;
@@ -95,7 +100,7 @@ class BreakGlassService {
    */
   hasActiveBreakGlassGrant(userId, caseId) {
     for (const [id, grant] of emergencyGrants.entries()) {
-      if (grant.userId === userId && grant.status === 'ACTIVE_GRANT') {
+      if ((userId == null || grant.userId === userId) && grant.status === 'ACTIVE_GRANT') {
         if (caseId && grant.caseId !== caseId) continue;
         if (Date.now() < grant.expiresAtMs) {
           return grant;

@@ -47,6 +47,7 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       sessionStorage.removeItem('sakshya_jwt_token');
+      sessionStorage.removeItem('sakshya_refresh_token');
       setToken(null);
       setUser(null);
 
@@ -71,15 +72,18 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       sessionStorage.removeItem('sakshya_jwt_token');
+      sessionStorage.removeItem('sakshya_refresh_token');
       setToken(null);
       setUser(null);
 
       const res = await api.post('/auth/verify-login-otp', { challengeId, otp }, {
         headers: { Authorization: '' }
       });
-      const { token: jwtToken, user: userObj } = res.data;
-      sessionStorage.setItem('sakshya_jwt_token', jwtToken);
-      setToken(jwtToken);
+      const { token: jwtToken, accessToken, refreshToken, user: userObj } = res.data;
+      const accessJwt = accessToken || jwtToken;
+      sessionStorage.setItem('sakshya_jwt_token', accessJwt);
+      if (refreshToken) sessionStorage.setItem('sakshya_refresh_token', refreshToken);
+      setToken(accessJwt);
       setUser(userObj);
       return userObj;
     } catch (err) {
@@ -93,12 +97,14 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     sessionStorage.removeItem('sakshya_jwt_token');
+    sessionStorage.removeItem('sakshya_refresh_token');
     setToken(null);
     setUser(null);
   };
 
   const isITAdmin = user?.systemRole === 'IT_ADMIN';
   const isSupervisor = user && ['JUDICIAL_MAGISTRATE', 'COMPLIANCE_AUDITOR'].includes(user.role);
+  const isBreakGlassSupervisor = user?.role === 'SUPERVISOR';
   const isBoss = isSupervisor;
   const isEmployee = user && !isITAdmin;
 
@@ -108,8 +114,21 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    const handleAuthExpired = () => {
+      sessionStorage.removeItem('sakshya_jwt_token');
+      sessionStorage.removeItem('sakshya_refresh_token');
+      setToken(null);
+      setUser(null);
+      setError('Your sign-in session expired. Please sign in again.');
+    };
+    window.addEventListener('sakshya-auth-expired', handleAuthExpired);
+    return () => window.removeEventListener('sakshya-auth-expired', handleAuthExpired);
+  }, []);
+
+  useEffect(() => {
     const handleFrozenAccount = event => {
       sessionStorage.removeItem('sakshya_jwt_token');
+      sessionStorage.removeItem('sakshya_refresh_token');
       setToken(null);
       setUser(null);
       setError(event.detail || 'This account is temporarily frozen after a security incident.');
@@ -129,6 +148,7 @@ export function AuthProvider({ children }) {
         isBoss,
         isITAdmin,
         isSupervisor,
+        isBreakGlassSupervisor,
         isEmployee,
         loginWithITAdminCredentials,
         loginWithEmployeeCredentials,

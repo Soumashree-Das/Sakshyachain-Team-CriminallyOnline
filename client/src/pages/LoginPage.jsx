@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ShieldCheck, UserCheck, Key, ArrowLeft, ArrowRight, Award, Users, Lock, MessageSquareText } from 'lucide-react';
+import { ShieldCheck, UserCheck, Key, ArrowLeft, ArrowRight, Award, Users, Lock, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage({ navigateTo: propNavigateTo }) {
   const navigate = useNavigate();
@@ -10,6 +10,7 @@ export default function LoginPage({ navigateTo: propNavigateTo }) {
   const [selectedPortal, setSelectedPortal] = useState(null);
   const [challenge, setChallenge] = useState(null);
   const [otp, setOtp] = useState('');
+  const [showOtp, setShowOtp] = useState(false);
   const [authenticating, setAuthenticating] = useState(false);
   const [authError, setAuthError] = useState(null);
   const [honeypot, setHoneypot] = useState('');
@@ -51,12 +52,18 @@ export default function LoginPage({ navigateTo: propNavigateTo }) {
     }
   };
 
-  const resetPortal = () => { setSelectedPortal(null); setChallenge(null); setOtp(''); setAuthError(null); };
+  const resetPortal = () => { setSelectedPortal(null); setChallenge(null); setOtp(''); setShowOtp(false); setAuthError(null); };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] px-4 py-10 font-sans text-slate-800 sm:px-6">
+    <div className="login-page min-h-screen px-4 py-10 font-sans text-slate-800 sm:px-6">
       <input type="text" name="b_hp_field" value={honeypot} onChange={event => setHoneypot(event.target.value)} tabIndex="-1" autoComplete="off" className="hidden opacity-0 absolute -z-50 pointer-events-none" aria-hidden="true" />
-      <main className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-lg flex-col items-center justify-center">
+      <main className="login-main mx-auto flex min-h-[calc(100vh-5rem)] w-full items-center justify-center">
+        <div className="login-layout">
+          <aside className="login-visual" aria-label="Satyamev Jayate national emblem">
+            <img src="/indian-flag.jpg" alt="Indian flag with the map of India and Ashoka Chakra" />
+            <p>JUSTICE <span>·</span> INTEGRITY <span>·</span> SERVICE</p>
+          </aside>
+          <section className="login-content">
         <div className="mb-6 text-center">
           <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-md shadow-blue-600/20"><ShieldCheck className="h-8 w-8" /></div>
           <h1 className="font-mono text-2xl font-extrabold tracking-tight text-slate-900">SĀKSHYACHAIN</h1>
@@ -84,9 +91,9 @@ export default function LoginPage({ navigateTo: propNavigateTo }) {
           ) : challenge ? (
             <>
               <button type="button" onClick={resetPortal} className="mb-4 inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-blue-700"><ArrowLeft className="h-3.5 w-3.5" />Start over</button>
-              <div className="mb-5"><div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-800"><MessageSquareText className="h-3.5 w-3.5" /> DESKTOP OTP MESSAGE</div><h2 className="text-lg font-bold text-slate-900">Verify it’s you</h2><p className="mt-1 text-xs leading-5 text-slate-600">A demo one-time code was received on this desktop for {challenge.displayName}. Enter it to finish signing in.</p></div>
-              <div role="status" className="mb-4 rounded-xl border border-blue-200 bg-blue-50 p-4"><div className="text-[10px] font-bold uppercase tracking-wider text-blue-800">Prototype desktop message</div><div className="mt-1 font-mono text-2xl font-extrabold tracking-[0.25em] text-slate-900">{challenge.demoOtp}</div><div className="mt-1 text-[11px] text-slate-600">Expires in {challenge.expiresInSeconds} seconds</div></div>
-              <form onSubmit={handleVerifyOtp} className="space-y-3"><label className="block text-xs font-semibold text-slate-800">6-digit OTP<input required inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" value={otp} onChange={event => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))} className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white p-2.5 text-center font-mono text-lg tracking-[0.3em]" placeholder="000000" /></label><button type="submit" disabled={authenticating || otp.length !== 6} className="btn btn-primary flex w-full items-center justify-center gap-2 py-3 text-xs font-extrabold disabled:opacity-60"><Key className="h-4 w-4" />{authenticating ? 'Verifying…' : 'Verify OTP and sign in'}</button></form>
+              <div className="mb-5"><div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-800"><Key className="h-3.5 w-3.5" /> TWO-STEP VERIFICATION</div><h2 className="text-lg font-bold text-slate-900">Verify it’s you</h2><p className="mt-1 text-xs leading-5 text-slate-600">Enter the six-digit verification code to finish signing in as {challenge.displayName}.</p></div>
+              <div role="status" className="mb-4 rounded-xl border border-blue-200 bg-blue-50 p-4 text-xs text-blue-900">Your verification code expires in {challenge.expiresInSeconds} seconds.</div>
+              <form onSubmit={handleVerifyOtp} className="space-y-3"><label className="block text-xs font-semibold text-slate-800">6-digit OTP<div className="relative mt-1.5"><input required type={showOtp ? 'text' : 'password'} inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" value={otp} onChange={event => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))} className="w-full rounded-lg border border-slate-300 bg-white p-2.5 pr-11 text-center font-mono text-lg tracking-[0.3em]" placeholder="••••••" /><button type="button" onClick={() => setShowOtp(value => !value)} aria-label={showOtp ? 'Hide OTP' : 'Show OTP'} title={showOtp ? 'Hide OTP' : 'Show OTP'} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900">{showOtp ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button></div></label><button type="submit" disabled={authenticating || otp.length !== 6} className="btn btn-primary flex w-full items-center justify-center gap-2 py-3 text-xs font-extrabold disabled:opacity-60"><Key className="h-4 w-4" />{authenticating ? 'Verifying…' : 'Verify OTP and sign in'}</button></form>
             </>
           ) : (
             <>
@@ -102,6 +109,8 @@ export default function LoginPage({ navigateTo: propNavigateTo }) {
           )}
         </div>
         <footer className="mt-6 text-center text-[11px] text-slate-500"><div className="flex items-center justify-center gap-3"><Link to="/privacy" className="underline underline-offset-4 hover:text-blue-600">Privacy</Link><span>·</span><Link to="/terms" className="underline underline-offset-4 hover:text-blue-600">Terms</Link><span>·</span><span className="inline-flex items-center gap-1"><Lock className="h-3 w-3 text-blue-600" /> AES-256-GCM vault</span></div><p className="mt-2 font-mono text-slate-400">© 2026 SākshyaChain</p></footer>
+          </section>
+        </div>
       </main>
     </div>
   );

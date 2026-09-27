@@ -13,16 +13,37 @@ import NetworkContextBanner from './NetworkContextBanner';
 import api from '../services/api';
 
 export default function Layout() {
-  const { user, isBoss, isSupervisor, isITAdmin, logout, error: authError } = useAuth();
+  const { user, isBoss, isSupervisor, isITAdmin, isBreakGlassSupervisor, logout, error: authError } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [pendingAccessRequests, setPendingAccessRequests] = useState(0);
   const [accessNotice, setAccessNotice] = useState(null);
+  const [pendingBreakGlass, setPendingBreakGlass] = useState([]);
+  const [emergencySoundEnabled, setEmergencySoundEnabled] = useState(false);
   const [tamperAlert, setTamperAlert] = useState(null);
   const [alarmEnabled, setAlarmEnabled] = useState(false);
   const seenTamperAlerts = useRef(new Set());
   const seenApprovalSteps = useRef(new Set());
+  const emergencyAudioRef = useRef(null);
+  const navRef = useRef(null);
+
+  useEffect(() => {
+    const closeMenusOutside = event => {
+      if (!event.target.closest('.portal-menu')) {
+        navRef.current?.querySelectorAll('.portal-menu[open]').forEach(menu => { menu.open = false; });
+      }
+    };
+    const closeMenusOnEscape = event => {
+      if (event.key === 'Escape') navRef.current?.querySelectorAll('.portal-menu[open]').forEach(menu => { menu.open = false; });
+    };
+    document.addEventListener('pointerdown', closeMenusOutside);
+    document.addEventListener('keydown', closeMenusOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeMenusOutside);
+      document.removeEventListener('keydown', closeMenusOnEscape);
+    };
+  }, []);
 
   const playTamperAlarm = async () => {
     try {
@@ -115,6 +136,65 @@ export default function Layout() {
     return () => { mounted = false; clearInterval(timer); };
   }, [user?.id]);
 
+  useEffect(() => {
+    if (!user || !isBreakGlassSupervisor) {
+      setPendingBreakGlass([]);
+      return undefined;
+    }
+    let mounted = true;
+    const pollBreakGlassRequests = async () => {
+      try {
+        const response = await api.get('/emergency/active');
+        if (!mounted) return;
+        setPendingBreakGlass((response.data.allRequests || []).filter(
+          request => request.status === 'PENDING_APPROVAL' && request.supervisorId === user.id && request.userId !== user.id
+        ));
+      } catch {
+        // Emergency request polling should not interrupt normal portal work.
+      }
+    };
+    pollBreakGlassRequests();
+    const timer = window.setInterval(pollBreakGlassRequests, 2500);
+    return () => { mounted = false; window.clearInterval(timer); };
+  }, [user?.id, isBreakGlassSupervisor]);
+
+  const enableEmergencySound = async () => {
+    try {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return;
+      if (!emergencyAudioRef.current) emergencyAudioRef.current = new AudioContextClass();
+      await emergencyAudioRef.current.resume();
+      setEmergencySoundEnabled(emergencyAudioRef.current.state === 'running');
+    } catch (error) {
+      console.warn('Browser could not enable emergency alert sound:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (!isBreakGlassSupervisor || !emergencySoundEnabled || pendingBreakGlass.length === 0) return undefined;
+    const context = emergencyAudioRef.current;
+    if (!context || context.state !== 'running') return undefined;
+    const playEmergencyBeep = () => {
+      [880, 660, 880].forEach((frequency, index) => {
+        const startAt = context.currentTime + index * 0.24;
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        oscillator.type = 'square';
+        oscillator.frequency.value = frequency;
+        gain.gain.setValueAtTime(0.0001, startAt);
+        gain.gain.exponentialRampToValueAtTime(0.11, startAt + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.18);
+        oscillator.connect(gain);
+        gain.connect(context.destination);
+        oscillator.start(startAt);
+        oscillator.stop(startAt + 0.2);
+      });
+    };
+    playEmergencyBeep();
+    const timer = window.setInterval(playEmergencyBeep, 1800);
+    return () => window.clearInterval(timer);
+  }, [isBreakGlassSupervisor, emergencySoundEnabled, pendingBreakGlass.length]);
+
   // Modals state
   const [isUserSwitcherOpen, setIsUserSwitcherOpen] = useState(false);
   const [isMFAOpen, setIsMFAOpen] = useState(false);
@@ -187,7 +267,7 @@ export default function Layout() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-[#334155] flex flex-col font-sans">
+    <div className="portal-shell min-h-screen text-[#334155] flex flex-col font-sans">
       {/* Network Security Context Bar */}
       <NetworkContextBanner />
 
@@ -205,13 +285,13 @@ export default function Layout() {
             </button>
 
             <Link to="/dashboard" className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-600/20">
+              <div className="portal-emblem">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-slate-900 text-lg tracking-tight font-mono">SākshyaChain</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold border bg-blue-50 text-blue-700 border-blue-200">
+                    <span className="font-extrabold text-slate-900 text-lg tracking-tight">SākshyaChain</span>
+                  <span className="portal-role-tag">
                     {isITAdmin ? 'IT ADMIN — ACCESS CUSTODIAN' : isSupervisor ? 'SUPERVISOR OVERSIGHT' : 'EMPLOYEE PORTAL'}
                   </span>
                 </div>
@@ -220,41 +300,11 @@ export default function Layout() {
             </Link>
           </div>
 
-          {/* Global Search Input */}
-          <div className="flex-1 max-w-md hidden md:block">
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Global Search (FIR #, Case ID, SHA-256 hash, Witness name)..."
-                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-
           {/* Right Controls & User Profile Pill */}
           <div className="flex items-center gap-2.5">
-            <Link
-              to={`/access-requests?tab=${isSupervisor ? 'supervisor' : 'owner'}`}
-              className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200"
-              title="Access requests needing your approval"
-              aria-label={`Access approval queue, ${pendingAccessRequests} pending`}
-            >
-              <Bell className="w-4 h-4" />
-              {pendingAccessRequests > 0 && <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-blue-600 text-white rounded-full text-[10px] font-bold flex items-center justify-center">{pendingAccessRequests}</span>}
-            </Link>
             {/* Boss-Only Header Controls: Break Glass Emergency & Security Alerts */}
             {isBoss && (
               <>
-                <button
-                  onClick={() => setIsBreakGlassOpen(true)}
-                  className="px-3 py-1.5 bg-[#1e293b] hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm"
-                  title="Request Break-Glass Emergency Access"
-                >
-                  <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
-                  <span className="hidden sm:inline">Break Glass</span>
-                </button>
-
                 <Link
                   to="/alerts"
                   className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200"
@@ -268,14 +318,14 @@ export default function Layout() {
               </>
             )}
 
-            <button
-              onClick={() => setIsMFAOpen(true)}
-              className="px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 rounded-lg text-xs font-semibold transition flex items-center gap-1.5"
-              title="2-Factor MFA Verification"
+            {user && <button
+              onClick={() => setIsBreakGlassOpen(true)}
+              className="px-3 py-1.5 bg-[#1e293b] hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm"
+              title={isITAdmin ? 'Monitor Break-Glass Emergency Requests' : isBreakGlassSupervisor ? 'Review Break-Glass Requests' : 'Request Break-Glass Emergency Access'}
             >
-              <Lock className="w-3.5 h-3.5 text-blue-600" />
-              <span className="hidden sm:inline">MFA Re-Auth</span>
-            </button>
+              <ShieldAlert className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline">{isITAdmin ? 'Break-Glass Monitor' : isBreakGlassSupervisor ? 'Supervisor Approvals' : 'Break Glass'}</span>
+            </button>}
 
             {/* User Profile Pill */}
             {user && (
@@ -296,19 +346,48 @@ export default function Layout() {
                   </div>
                 </div>
 
-                {/* Direct Logout Button */}
-                <button
-                  onClick={logout}
-                  className="p-2 bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-700 rounded-lg border border-slate-200 transition-colors flex items-center gap-1 text-xs font-semibold"
-                  title="Sign out & return to Login Page"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span className="hidden md:inline">Logout</span>
-                </button>
               </div>
             )}
           </div>
         </div>
+        {/* Navigation shares this header container, forming one continuous header. */}
+        <nav ref={navRef} className={`portal-nav ${mobileMenuOpen ? 'portal-nav-open' : ''}`} aria-label="Main navigation">
+          <div className="portal-nav-inner">
+            <Link className="portal-home" to="/dashboard" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+            {sidebarSections.map(section => (
+              <details className="portal-menu" name="primary-navigation" key={section.title}>
+                <summary>{section.title.charAt(0) + section.title.slice(1).toLowerCase()} <ChevronRight aria-hidden="true" /></summary>
+                <div className="portal-dropdown">
+                  {section.items.map(item => {
+                    const Icon = item.icon;
+                    return <Link key={item.id} to={item.path} onClick={() => setMobileMenuOpen(false)} className={location.pathname.startsWith(item.path) ? 'portal-link-active' : ''}><Icon />{item.label}</Link>;
+                  })}
+                </div>
+              </details>
+            ))}
+            <Link to="/profile" onClick={() => setMobileMenuOpen(false)}>My Profile</Link>
+            <div className="portal-nav-actions">
+              <Link
+                to={`/access-requests?tab=${isSupervisor ? 'supervisor' : 'owner'}`}
+                className="portal-nav-action relative"
+                title="Access requests needing your approval"
+                aria-label={`Access approval queue, ${pendingAccessRequests} pending`}
+              >
+                <Bell className="w-4 h-4" />
+                <span className="hidden sm:inline">Notifications</span>
+                {pendingAccessRequests > 0 && <span className="portal-nav-badge">{pendingAccessRequests}</span>}
+              </Link>
+              <button onClick={() => setIsMFAOpen(true)} className="portal-nav-action" title="2-Factor MFA Verification">
+                <Lock className="w-3.5 h-3.5" />
+                <span>MFA Re-Auth</span>
+              </button>
+              {user && <button onClick={logout} className="portal-nav-action" title="Sign out & return to Login Page">
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </button>}
+            </div>
+          </div>
+        </nav>
       </header>
 
       {isITAdmin && tamperAlert && (
@@ -332,80 +411,29 @@ export default function Layout() {
         </div>
       )}
 
-      {/* Main Container — sidebar is edge-aligned (no floating offset) */}
-      <div className="relative flex min-h-[calc(100vh-53px)] w-full">
-
-        {/* Navigation Sidebar — sticky, edge-aligned, no floating offset */}
-        <aside className={`w-60 flex-shrink-0 bg-white border-r border-[#E2E8F0] h-[calc(100vh-53px)] sticky top-[53px] z-30 overflow-y-auto py-5 ${
-          mobileMenuOpen ? 'fixed top-[53px] left-0 z-40 shadow-2xl' : 'hidden lg:block'
-        }`}>
-          <div className="px-3 mb-4 flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Navigation</span>
-            <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold ${
-              isBoss ? 'bg-rose-100 text-rose-800' : 'bg-blue-100 text-blue-800'
-            }`}>
-              {isITAdmin ? 'READ ONLY' : isSupervisor ? 'OVERSIGHT' : 'EMPLOYEE'}
-            </span>
-          </div>
-
-          <nav className="space-y-5">
-            {sidebarSections.map((section) => (
-              <div key={section.title}>
-                <div className="px-3 mb-1.5 flex items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{section.title}</span>
-                  <span className="flex-1 h-px bg-slate-100" />
-                </div>
-                <div className="space-y-0.5">
-                  {section.items.map(item => {
-                    const Icon = item.icon;
-                    const isActive = location.pathname.startsWith(item.path);
-                    return (
-                      <Link
-                        key={item.id}
-                        to={item.path}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                          isActive
-                            ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200'
-                            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
-                          <span className="truncate">{item.label}</span>
-                        </div>
-
-                        {item.badge ? (
-                          <span className="px-1.5 py-0.5 rounded bg-rose-100 text-rose-700 font-mono text-[10px] font-bold flex-shrink-0">{item.badge}</span>
-                        ) : (
-                          isActive && <ChevronRight className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
-                        )}
-                      </Link>
-                    );
-                  })}
-                </div>
+      {isBreakGlassSupervisor && pendingBreakGlass.length > 0 && (
+        <section role="alert" aria-live="assertive" className="fixed right-4 top-24 z-[1100] w-[min(26rem,calc(100vw-2rem))] rounded-xl border-2 border-rose-500 bg-rose-950 p-4 text-white shadow-2xl">
+          <div className="flex items-start gap-3">
+            <BellRing className="mt-0.5 h-5 w-5 shrink-0 animate-pulse text-amber-300" />
+            <div className="min-w-0 flex-1">
+              <h2 className="font-bold tracking-wide">EMERGENCY ACCESS REQUEST</h2>
+              <p className="mt-1 text-sm">{pendingBreakGlass[0].userName} · {pendingBreakGlass[0].caseId}</p>
+              <p className="mt-1 line-clamp-3 text-xs text-rose-100">{pendingBreakGlass[0].reason}</p>
+              {pendingBreakGlass.length > 1 && <p className="mt-1 text-xs font-semibold text-amber-200">{pendingBreakGlass.length - 1} more request(s) awaiting review</p>}
+              <div className="mt-3 flex flex-wrap gap-2">
+                {!emergencySoundEnabled && <button onClick={enableEmergencySound} className="rounded-md bg-amber-300 px-3 py-2 text-xs font-bold text-slate-900">Enable emergency sound</button>}
+                <button onClick={() => setIsBreakGlassOpen(true)} className="rounded-md bg-white px-3 py-2 text-xs font-bold text-rose-900">Review request</button>
               </div>
-            ))}
-          </nav>
-
-          {/* User Role Card */}
-          {user && (
-            <div className="mt-6 pt-4 border-t border-slate-200 space-y-2 text-xs">
-              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{isITAdmin ? 'System Access' : 'Security Clearance'}</div>
-              <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-200 space-y-1">
-                <div className="font-bold text-slate-900">{user.name}</div>
-                <div className="text-slate-500 font-mono text-[11px] truncate">{user.department}</div>
-                <div className="mt-1">{isITAdmin ? <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">IT ADMIN — READ ONLY</span> : getClearanceBadge(user.clearanceLevel || 3)}</div>
-              </div>
+              {emergencySoundEnabled && <p className="mt-2 text-[11px] text-rose-200">Emergency alarm repeats until pending requests are approved.</p>}
             </div>
-          )}
-        </aside>
+          </div>
+        </section>
+      )}
 
-        {/* Dynamic Outlet for Page Content */}
-        <main className="flex-1 min-w-0 px-6 py-6 overflow-x-hidden">
-          <Outlet />
-        </main>
-      </div>
+      {/* Dynamic Outlet for Page Content */}
+      <main className={`portal-content flex-1 min-w-0 px-6 py-6 overflow-x-hidden ${location.pathname === '/cases' || location.pathname.startsWith('/access-requests') ? 'portal-content-wide' : ''}`}>
+        <Outlet />
+      </main>
 
       {/* Global Modals (User Switcher only for Boss) */}
       {isBoss && (

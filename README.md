@@ -24,7 +24,7 @@
 
 - **Zero-Trust Security Architecture**:
   - **AES-256-GCM Envelope Encryption** for evidence vault files.
-  - **Multi-Factor Authentication (MFA OTP)** with 120s TTL and 3-attempt lockout.
+  - **Multi-Factor Authentication (MFA OTP)** with 120s TTL and 3-attempt lockout. The prototype code is `246810`; it is masked on the sign-in screen and documented in [demo credentials and access flow](DEMO_CREDENTIALS_AND_ACCESS_FLOW.md).
   - **Break-Glass Emergency Access** granting temporary 30-minute elevated privileges.
   - **CORS & IP Whitelist Firewall** enforcing subnet and origin security boundaries.
 

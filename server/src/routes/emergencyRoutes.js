@@ -3,6 +3,7 @@ import { breakGlassService } from '../services/breakGlassService.js';
 import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
+const isBreakGlassSupervisor = user => user.role === 'SUPERVISOR';
 
 // POST /api/emergency/request - Request Break-Glass Emergency Access
 router.post('/request', authenticateToken, (req, res) => {
@@ -28,6 +29,9 @@ router.post('/request', authenticateToken, (req, res) => {
 
 // POST /api/emergency/approve - Supervisor Approves 30-Minute Time-Boxed Emergency Grant
 router.post('/approve', authenticateToken, (req, res) => {
+  if (!isBreakGlassSupervisor(req.user)) {
+    return res.status(403).json({ error: 'SUPERVISOR_ONLY', message: 'Only the designated employee supervisor can approve break-glass access.' });
+  }
   const { requestId } = req.body;
   if (!requestId) {
     return res.status(400).json({ error: 'MISSING_REQUEST_ID', message: 'requestId is required' });
@@ -49,8 +53,9 @@ router.post('/approve', authenticateToken, (req, res) => {
 
 // GET /api/emergency/active - Active Break-Glass Grants for current user
 router.get('/active', authenticateToken, (req, res) => {
-  const activeGrants = breakGlassService.getActiveGrantsForUser(req.user.id);
-  const allRequests = breakGlassService.getAllRequests();
+  const canMonitor = isBreakGlassSupervisor(req.user) || req.user.systemRole === 'IT_ADMIN';
+  const activeGrants = breakGlassService.getActiveGrantsForUser(req.user.systemRole === 'IT_ADMIN' ? null : req.user.id);
+  const allRequests = canMonitor ? breakGlassService.getAllRequests() : [];
   res.json({ activeGrants, allRequests });
 });
 

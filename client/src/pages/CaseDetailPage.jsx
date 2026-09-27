@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { Database, FileText, Clock, Lock, ShieldCheck, ArrowLeft, Plus, Eye, Key, CheckCircle2, Download } from 'lucide-react';
+import { Database, FileText, Clock, Lock, ArrowLeft, Plus, Eye, Key, CheckCircle2, Download } from 'lucide-react';
 import DocumentViewerModal from '../components/DocumentViewerModal';
 import DigitalSignerModal from '../components/DigitalSignerModal';
 import UploadModal from '../components/UploadModal';
@@ -107,23 +107,18 @@ export default function CaseDetailPage({ caseId: propCaseId, navigateTo: propNav
             </button>
           </div>
 
-          <div className="space-y-3">
+          <div className="case-document-grid">
             {documents.map(doc => (
-              <div key={doc.id} className="white-card p-4 border border-slate-200 flex flex-wrap items-center justify-between gap-4 text-xs">
-                <div className="space-y-1 flex-1 min-w-[240px]">
+              <div key={doc.id} className="white-card case-document-card p-4 border border-slate-200 flex items-center justify-between gap-3 text-xs">
+                <div className="case-document-info space-y-1 flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-slate-900 text-sm">{doc.title}</span>
+                    <span className="case-document-title font-bold text-slate-900 text-sm">{doc.title}</span>
                     <span className="badge badge-success font-mono text-[10px]">v{doc.version || '1.0'}</span>
-                    <span className="badge badge-clearance-2 text-[10px]">AES-256</span>
                   </div>
-                  <div className="text-slate-500">Doc ID: <span className="font-mono text-slate-700">{doc.id}</span> • Author: {doc.authorName} ({doc.department})</div>
-                  <div className="text-emerald-700 font-semibold text-[11px] flex items-center gap-1 mt-0.5">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>✓ SHA-256 Secured & Stored in Database</span>
-                  </div>
+                  <div className="case-document-meta text-slate-500">Doc ID: <span className="font-mono text-slate-700">{doc.id}</span> • Author: {doc.authorName} ({doc.department})</div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="case-document-actions flex items-center gap-3">
                   {doc.signature ? (
                     <span className="badge badge-success flex items-center gap-1">
                       <CheckCircle2 className="w-3.5 h-3.5" /> RSA Verified

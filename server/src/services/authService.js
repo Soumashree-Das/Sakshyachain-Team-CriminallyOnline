@@ -7,6 +7,7 @@ import { isAccountFrozen } from '../utils/accountFreeze.js';
 
 // In-Memory store for MFA OTP states (userId -> { hashedOTP, expiresAt, attempts })
 const mfaSessionStore = new Map();
+const DEMO_MFA_OTP = '246810';
 
 /**
  * PBKDF2 Password Hashing (100,000 iterations, 32-byte salt)
@@ -23,16 +24,14 @@ export function verifyPassword(password, salt, hash) {
 }
 
 /**
- * Generates 6-Digit Numeric MFA OTP with 120s TTL
+ * Starts a 6-digit prototype MFA challenge with 120s TTL
  */
 export function generateMFAOTP(userId) {
   const user = dbService.getUserById(userId);
   if (!user) throw new Error('User not found');
   if (isAccountFrozen(user)) throw new Error('Account frozen after a security incident.');
 
-  // Cryptographically Secure PRNG (CSPRNG) for 6-digit numeric OTP
-  const rawOTP = crypto.randomInt(100000, 1000000).toString();
-  const hashedOTP = crypto.createHash('sha256').update(rawOTP).digest('hex');
+  const hashedOTP = crypto.createHash('sha256').update(DEMO_MFA_OTP).digest('hex');
   const expiresAt = Date.now() + CONFIG.MFA_OTP_TTL_SECONDS * 1000;
 
   mfaSessionStore.set(userId, {
@@ -53,10 +52,7 @@ export function generateMFAOTP(userId) {
     details: { ttlSeconds: CONFIG.MFA_OTP_TTL_SECONDS }
   });
 
-  return {
-    rawOTP, // Returned to caller/UI for immediate testing
-    expiresInSeconds: CONFIG.MFA_OTP_TTL_SECONDS
-  };
+  return { expiresInSeconds: CONFIG.MFA_OTP_TTL_SECONDS };
 }
 
 /**

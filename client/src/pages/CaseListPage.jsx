@@ -98,7 +98,7 @@ export default function CaseListPage({ navigateTo: propNavigateTo }) {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="case-list-page space-y-6">
       {/* Header Toolbar */}
       <div className="white-card p-4 border border-slate-200 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
@@ -153,7 +153,7 @@ export default function CaseListPage({ navigateTo: propNavigateTo }) {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="input-field w-auto py-2 text-xs font-semibold"
+              className="input-field case-filter-select py-2 text-xs font-semibold"
             >
               <option value="ALL">All Statuses</option>
               <option value="UNDER_TRIAL">Under Trial</option>
@@ -183,7 +183,7 @@ export default function CaseListPage({ navigateTo: propNavigateTo }) {
         </div>
       ) : activeTab === 'cases' ? (
         /* Case Cards View */
-        <div className="space-y-4">
+        <div className="case-card-grid">
           {filteredCases.length === 0 ? (
             <div className="white-card p-12 text-center space-y-3 border border-slate-200">
               <Search className="w-10 h-10 text-slate-300 mx-auto" />
@@ -208,15 +208,15 @@ export default function CaseListPage({ navigateTo: propNavigateTo }) {
                 <div
                   key={c.id}
                   onClick={() => handleNavigateCase(c.id)}
-                  className="white-card p-5 border border-slate-200 white-card-hover cursor-pointer space-y-3 transition-all"
+                  className="white-card case-card p-5 border border-slate-200 white-card-hover cursor-pointer space-y-3 transition-all"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-2">
                       <span className="font-bold text-slate-900 text-base font-mono">{c.firNumber || c.id}</span>
                       <span className="badge badge-info font-mono">{c.status}</span>
                       <span className="badge badge-purple text-[10px]">{caseDocs.length} Documents</span>
                     </div>
-                    <span className="badge badge-clearance-3">Clearance L{c.clearanceRequired} Required</span>
+                    <span className="badge badge-clearance-3 shrink-0">Clearance L{c.clearanceRequired} Required</span>
                   </div>
 
                   <h3 className="font-bold text-slate-900 text-lg">{c.title}</h3>
@@ -224,7 +224,7 @@ export default function CaseListPage({ navigateTo: propNavigateTo }) {
 
                   {/* Document pills attached to this case */}
                   {caseDocs.length > 0 && (
-                    <div className="pt-2 flex flex-wrap items-center gap-2">
+                    <div className="case-file-list pt-2 flex flex-wrap items-center gap-2">
                       <span className="text-[11px] text-slate-400 font-mono">Case Files:</span>
                       {caseDocs.map(d => (
                         <div
@@ -233,7 +233,7 @@ export default function CaseListPage({ navigateTo: propNavigateTo }) {
                             e.stopPropagation();
                             setSelectedDocModal(d);
                           }}
-                          className="bg-slate-100 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 p-1.5 px-2.5 rounded-lg text-xs flex items-center gap-2 font-mono transition-colors text-slate-800"
+                          className="case-file-chip bg-slate-100 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 p-1.5 px-2.5 rounded-lg text-xs flex items-center gap-2 font-mono transition-colors text-slate-800"
                         >
                           <FileText className="w-3.5 h-3.5 text-blue-600" />
                           <span className="font-bold">{d.title}</span>
@@ -250,7 +250,7 @@ export default function CaseListPage({ navigateTo: propNavigateTo }) {
                     </div>
                   )}
 
-                  <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-500 gap-2 font-sans">
+                  <div className="case-card-footer pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-500 gap-2 font-sans">
                     <div>Lead Officer: <strong className="text-slate-800">{c.leadInvestigator}</strong> • Prosecutor: <strong className="text-slate-800">{c.prosecutor}</strong></div>
                     <div className="flex items-center gap-1 text-blue-600 font-bold hover:underline">
                       View Case Directory & Evidence Vault <ChevronRight className="w-4 h-4" />

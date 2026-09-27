@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   ShieldAlert, 
   ShieldCheck, 
@@ -8,10 +8,7 @@ import {
   CheckCircle2, 
   XCircle, 
   AlertTriangle, 
-  RefreshCw, 
-  Key, 
-  Lock, 
-  Flame
+  Key
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -37,6 +34,13 @@ const ROLE_POLICY_TABLE = {
     policyName: 'RBAC-POLICY-LEO-01',
     accessScope: 'Case File Management • Primary Evidence Ingestion • Chain of Custody Handover',
     allowedDepartments: ['LEO']
+  },
+  'SUPERVISOR': {
+    decision: 'ALLOW',
+    clearanceLevel: 3,
+    policyName: 'RBAC-POLICY-LEO-SUP-01',
+    accessScope: 'Assigned Investigation Oversight • Break-Glass Request Approval',
+    allowedDepartments: ['LEO', 'FOR', 'PROS']
   },
   'FORENSIC_SPECIALIST': {
     decision: 'ALLOW',
@@ -77,32 +81,17 @@ export default function ZeroTrustSecurityPanel({ userOverride }) {
 
   // Local component state for Zero-Trust Continuous Risk Evaluation
   // Requirement: Default continuous risk score is 22 (numeric, hardcoded)
-  const [riskScore, setRiskScore] = useState(22);
-  const [isSuspicious, setIsSuspicious] = useState(false);
-  const [simulationTriggerCount, setSimulationTriggerCount] = useState(0);
+  const riskScore = 22;
+  const isSuspicious = false;
+  const simulationTriggerCount = 0;
 
   // Compute final RBAC/ABAC decision:
   // If suspicious activity is simulated, decision flips to DENY.
   // Otherwise, it is computed from the local rule table keyed on the real user role.
   const decisionResult = isSuspicious ? 'DENY' : rolePolicy.decision;
 
-  // Handle local state update for "Simulate suspicious activity"
-  // Requirement: Button has no backend call — strictly updates local component state
-  // Requirement: Flips risk score to 85+, decision to DENY, and displays alert banner
-  const handleSimulateSuspiciousActivity = () => {
-    setIsSuspicious(true);
-    setRiskScore(88); // 85+ numeric score
-    setSimulationTriggerCount(prev => prev + 1);
-  };
-
-  // Reset to default baseline posture (clean local state)
-  const handleResetPosture = () => {
-    setIsSuspicious(false);
-    setRiskScore(22); // Reset to default 22
-  };
-
   return (
-    <div className="bg-white border-2 border-slate-200 rounded-2xl p-6 shadow-sm space-y-6 transition-all font-sans">
+    <section className="white-card portal-panel p-6 space-y-6 transition-all font-sans" aria-label="Continuous zero-trust security posture">
       
       {/* Panel Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
@@ -129,34 +118,6 @@ export default function ZeroTrustSecurityPanel({ userOverride }) {
           </div>
         </div>
 
-        {/* Action Button: Simulate Suspicious Activity (Requirement) */}
-        <div className="flex items-center gap-2">
-          {!isSuspicious ? (
-            <button
-              onClick={handleSimulateSuspiciousActivity}
-              className="btn bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold py-2 px-3.5 rounded-lg flex items-center gap-2 shadow-sm transition-all hover:shadow"
-              title="Simulates an anomaly trigger in local state without any backend API call"
-            >
-              <Flame className="w-4 h-4 text-amber-300" />
-              <span>Simulate suspicious activity</span>
-            </button>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono font-bold text-rose-700 bg-rose-50 px-2.5 py-1 rounded-md border border-rose-200 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-rose-600 animate-ping"></span>
-                Anomaly Simulation Active
-              </span>
-              <button
-                onClick={handleResetPosture}
-                className="btn bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold py-1.5 px-3 rounded-lg border border-slate-300 flex items-center gap-1.5 transition-all"
-                title="Reset local state back to baseline healthy status (score: 22, decision: ALLOW)"
-              >
-                <RefreshCw className="w-3.5 h-3.5 text-blue-600" />
-                <span>Reset Posture</span>
-              </button>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Alert Banner (Requirement: shows an alert banner when suspicious activity is triggered) */}
@@ -383,23 +344,6 @@ export default function ZeroTrustSecurityPanel({ userOverride }) {
 
       </div>
 
-      {/* Rule Table Details Footer */}
-      <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs text-slate-600 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <Lock className="w-4 h-4 text-blue-600 flex-shrink-0" />
-          <span>
-            <strong className="text-slate-800">Local Rule Table Evaluation:</strong> Keyed on real role{' '}
-            <code className="bg-white px-1.5 py-0.5 rounded border border-slate-200 font-mono text-blue-700 font-bold">
-              {currentRole}
-            </code>
-            {' '}— {rolePolicy.accessScope}
-          </span>
-        </div>
-        <div className="text-[11px] font-mono text-slate-400 shrink-0">
-          Clearance Level {rolePolicy.clearanceLevel}
-        </div>
-      </div>
-
-    </div>
+    </section>
   );
 }
